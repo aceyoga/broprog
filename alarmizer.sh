@@ -81,7 +81,7 @@ function cvol(){
         echo "cvol      : changes the volume gain of master to given number(parameter 2, in percentages, must be between 0-100)." && exit
     fi
     if [ $1 <= 100 && $1 >= 0 ]; then
-        $(amixer set Master %${1})
+        $(amixer set Master ${1}%)
         echo "Master volume set to" $(1)
     else 
         echo "Specified volume invalid. Try again."
@@ -95,7 +95,7 @@ function ivol(){
         exit
     fi
     if [ $1 <= 100 && $1 >= 0 ]; then
-        $(amixer set Master %${1}+)
+        $(amixer set Master ${1}%+)
         echo "Master volume set to " ${1}
     else 
         echo "Specified volume invalid. Try again."
