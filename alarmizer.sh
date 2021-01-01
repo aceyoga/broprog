@@ -54,10 +54,10 @@ function play(){
     if [ $opt == "help" ]; then
         echo "play      : plays the given audio file(parameter 2) with the specified duration(parameter 3, optional)." && exit
     fi
-    if [ -z "$3" ]; then
-        $(aplay $2)
+    if [ -z "$2" ]; then
+        $(aplay $1)
     else 
-        $(aplay $2 -d $3)
+        $(aplay $1 -d $2)
     fi
 }
 
@@ -65,13 +65,13 @@ function record(){
     if [ $opt == "help" ]; then 
         echo "record    : records sound via mic and saves it to the given filename(parameter 2) with the specified duration(parameter 3, optional)." && exit
     fi
-    if [ ${3} != "" ]; then
+    if [ $2 != "" ]; then
         echo "has duration"
-        $(arecord $2 -d $3 -r 44100)
+        $(arecord $1 -d $2 -r 44100)
         exit        
     else
         echo "no duration"
-        $(arecord $2)
+        $(arecord $1)
         exit
     fi
 }
@@ -81,8 +81,8 @@ function cvol(){
         echo "cvol      : changes the volume gain of master to given number(parameter 2, in percentages, must be between 0-100)." && exit
     fi
     if [ $num <= 100 && $num >= 0 ]; then
-        $(amixer set Master %${2})
-        echo "Master volume set to" $(num)
+        $(amixer set Master %${1})
+        echo "Master volume set to" $(1)
     else 
         echo "Specified volume invalid. Try again."
     fi
@@ -95,8 +95,8 @@ function ivol(){
         exit
     fi
     if [ $num <= 100 && $num >= 0 ]; then
-        $(amixer set Master %${2}+)
-        echo "Master volume set to " ${2}
+        $(amixer set Master %${1}+)
+        echo "Master volume set to " ${1}
     else 
         echo "Specified volume invalid. Try again."
     fi
@@ -109,9 +109,9 @@ function dvol(){
         echo "            if the volume is decreased beyond 0, an error will be printed to stderr."
         exit
     fi
-    if [ $num <= 100 && $2 >= 0 ]; then
-        $(amixer set Master %${2}-)
-        echo "Master volume decreased to " ${2}
+    if [ $num <= 100 && $1 >= 0 ]; then
+        $(amixer set Master %${1}-)
+        echo "Master volume decreased to " ${1}
     else 
         echo "Specified volume invalid. Try again."
     fi
@@ -123,12 +123,12 @@ function setalarm(){
         echo "as the alarm sound(if not given, default value will be used). Alarm Duration is optional at parameter 4."
     fi
     $(crontab -l > jobs.txt)
-    if [ ${3} != "" && ${4} != "" ]; then
-        echo "${2} aplay ${3} -d ${4}" >> "jobs.txt"
+    if [ ${2} != "" && ${3} != "" ]; then
+        echo "${2} aplay ${2} -d ${3}" >> "jobs.txt"
     elif [ ${3} != "" ]; then
-        echo "${2} aplay ${3}" >> "jobs.txt"
+        echo "${1} aplay ${2}" >> "jobs.txt"
     else
-        echo "${2} aplay " >> "jobs.txt"
+        echo "${1} aplay " >> "jobs.txt"
     fi
     $(cron jobs.txt)
     echo "Alarm Set"
@@ -167,7 +167,7 @@ function delalarm(){
 msg=""
 if [ $# == 0 ]; then
     read -p "Welcome to Broprog Alarmizer. What do you want to do? (type help to print manual): " msg
-    $msg
+    echo $msg
 fi
 
 if [ $# == 1 ]; then
@@ -177,11 +177,6 @@ if [ $# == 1 ]; then
     exit
 else
     opt=$2
-    p1=$1
-    p2=$2
-    p3=$3
-    p4=$4
-    p5=$5
-    $1
+    $1 $2 $3 $4 $5
 fi
 
