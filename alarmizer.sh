@@ -176,6 +176,7 @@ if [ $# == 1 ]; then
     echo "Command not found. Try again."
     exit
 else
+    opt=$2
     p1=$1
     p2=$2
     p3=$3
