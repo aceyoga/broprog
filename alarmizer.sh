@@ -116,7 +116,7 @@ function dvol(){
         echo "Specified volume invalid. Try again."
     fi
 }
-deploy tuh batch script biar gausah git add git commit git push wkwkwk
+
 function setalarm(){
     if [ $opt == "help" ]; then 
         echo "setalarm  : sets an alarm with the given parameter 2 as time value(see man cronjob), and the parameter 3"
