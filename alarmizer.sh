@@ -1,3 +1,4 @@
+#!/bin/bash
 # Broprog Audio Playbach, Record, and Volume Mixer
 # How to Use:
 # ./broprog.sh command args
@@ -25,48 +26,21 @@
 # -f : the file name/path to file(relative to the program. Can be absolute path).
 # -t : a single-line command encapsulated in "".
 # -w : the time for setalarm. Format: month-week-day
-msg=""
-if [ $# == 0 ]; then
-    read -p "Welcome to Broprog Alarmizer. What do you want to do? (type help to print manual)" msg
-    echo msg
-    #$(conditionals)
-fi
-echo msg
 
-if [ $# == 1 ]; then
-    [ "$1" == "help" ] && $(help) && exit
-    [ "$1" == "devlist" ] && $(aplay -l) && exit
-    echo "Command not found. Try again."
-    exit
-else
-    while getopts n:d:f:t:w flag
-    do
-        case "${flag}" in
-            n) num=${OPTARG};;
-            d) duration=${OPTARG};;
-            f) filename=${OPTARG};;
-            t) task=${OPTARG};;
-            w) timeval=${OPTARG};;
-        esac
-    done
-    $(conditionals)
-fi
-
-function help(){
-    echo "================================================================
-        Command list: \n
-        help : show command list and how to use.\n
-        devlist : lists all audio devices(equivalent of aplay -l).\n
-        play : plays the given audio file with the specified args.\n
-        record : records sound via mic and saves it to the given filename with the specified args.\n
-        cvol : changes the volume gain of master to given args.\n
-        ivol : increases the volume gain of master by the given args.\n
-        dvol : decreases the volume gain of master by the given args.\n
-        setalarm : sets an alarm with the given args as data, and the filename as the alarm sound(if not given, default value will be used).\n
-        showalarm : shows all alarms that have been created.\n
-        delalarm : removes the specified alarm from the system. Does not remove the sound used.\n
-        ==================================================================
-        "
+function broproghelp(){
+    echo "================================================================"
+    echo "Command list:"
+    echo "help      : show command list and how to use."
+    echo "devlist   : lists all audio devices(equivalent of aplay -l)."
+    echo "play      : plays the given audio file with the specified args."
+    echo "record    : records sound via mic and saves it to the given filename with the specified args."
+    echo "cvol      : changes the volume gain of master to given args."
+    echo "ivol      : increases the volume gain of master by the given args."
+    echo "dvol      : decreases the volume gain of master by the given args."
+    echo "setalarm  : sets an alarm with the given args as data, and the filename as the alarm sound(if not given, default value will be used)."
+    echo "showalarm : shows all alarms that have been created."
+    echo "delalarm  : removes the specified alarm from the system. Does not remove the sound used."
+    echo "=================================================================="
     exit
 }
 
@@ -81,6 +55,7 @@ function play(){
         $(aplay $filename)
     else 
         $(aplay $filename -d $duration)
+    fi
 }
 
 function record(){
@@ -151,3 +126,34 @@ function delalarm(){
     read -p "Which alarm you want to delete?" msg
     [ msg <= count ] && $(cat jobs.txt | grep aplay | sed -i '${msg}d' jobs.txt)
 }
+
+msg=""
+if [ $# == 0 ]; then
+    read -p "Welcome to Broprog Alarmizer. What do you want to do? (type help to print manual): " msg
+    echo $msg
+    #$(conditionals)
+fi
+
+if [ $# == 1 ]; then
+    [ "$1" == "help" ] && broproghelp && exit
+    [ "$1" == "devlist" ] && $(aplay -l) && exit
+    echo "Command not found. Try again."
+    exit
+else
+    while getopts "n:d:f:t:w:" flag; do
+        case "${flag}" in
+            n) num=${OPTARG};;
+            d) duration=${OPTARG};;
+            f) filename=${OPTARG};;
+            t) task=${OPTARG};;
+            w) timeval=${OPTARG};;
+        esac
+    done
+    echo "num = ${num}"
+    echo "duration = ${duration}"
+    echo "filename = ${filename}"
+    echo "task = ${task}"
+    echo "timeval = ${timeval}"
+    $1
+fi
+
