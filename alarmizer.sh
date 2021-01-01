@@ -80,7 +80,7 @@ function cvol(){
     if [ $opt == "help" ]; then 
         echo "cvol      : changes the volume gain of master to given number(parameter 2, in percentages, must be between 0-100)." && exit
     fi
-    if [ $num <= 100 && $num >= 0 ]; then
+    if [ $1 <= 100 && $1 >= 0 ]; then
         $(amixer set Master %${1})
         echo "Master volume set to" $(1)
     else 
@@ -94,13 +94,13 @@ function ivol(){
         echo "            if the volume is increased beyond 100, an error will be printed to stderr."
         exit
     fi
-    if [ $num <= 100 && $num >= 0 ]; then
+    if [ $1 <= 100 && $1 >= 0 ]; then
         $(amixer set Master %${1}+)
         echo "Master volume set to " ${1}
     else 
         echo "Specified volume invalid. Try again."
     fi
-    
+
 }
 
 function dvol(){
@@ -164,10 +164,17 @@ function delalarm(){
     [ msg <= count ] && $(cat jobs.txt | grep aplay | sed -i '${msg}d' jobs.txt)
 }
 
+function startup(){ # literally mindahin crontab dari default di /lalala/lilili/cron ke /home/user/broprog/jobs.txt
+    crontab -l > /home/user/broprog/jobs.txt there :V 
+}
+
 msg=""
 if [ $# == 0 ]; then
-    read -p "Welcome to Broprog Alarmizer. What do you want to do? (type help to print manual): " msg
-    echo $msg
+    clear
+    read -p "Welcome to Broprog Alarmizer. What do you want to do? (type broproghelp to print manual): " msg
+    order=($msg)
+    ${order[0]} ${order[1]} ${order[2]} ${order[3]} ${order[4]} ${order[5]}
+    echo "See you later :D"
 fi
 
 if [ $# == 1 ]; then
