@@ -51,26 +51,37 @@ function pause(){
 }
 
 function play(){
-    if [ -z "$duration" ]; then
-        $(aplay $filename)
+    if [ $opt == "help" ]; then
+        echo "play      : plays the given audio file(parameter 2) with the specified duration(parameter 3, optional)." && exit
+    fi
+    if [ -z "$3" ]; then
+        $(aplay $2)
     else 
-        $(aplay $filename -d $duration)
+        $(aplay $2 -d $3)
     fi
 }
 
 function record(){
-    if [ -v ${duration} ]; then
-        $(arecord $filename -d $duration)
-        exit
+    if [ $opt == "help" ]; then 
+        echo "record    : records sound via mic and saves it to the given filename(parameter 2) with the specified duration(parameter 3, optional)." && exit
+    fi
+    if [ ${3} != "" ]; then
+        echo "has duration"
+        $(arecord $2 -d $3 -r 44100)
+        exit        
     else
-        $(arecord $filename)
+        echo "no duration"
+        $(arecord $2)
         exit
     fi
 }
 
 function cvol(){
+    if [ $opt == "help" ]; then 
+        echo "cvol      : changes the volume gain of master to given number(parameter 2, in percentages, must be between 0-100)." && exit
+    fi
     if [ $num <= 100 && $num >= 0 ]; then
-        $(amixer set Master %${num})
+        $(amixer set Master %${2})
         echo "Master volume set to" $(num)
     else 
         echo "Specified volume invalid. Try again."
@@ -78,9 +89,14 @@ function cvol(){
 }
 
 function ivol(){
+    if [ $opt == "help" ]; then 
+        echo "ivol      : increases the volume gain of master by the given number(parameter 2, in percentages, must be between 0-100)."
+        echo "            if the volume is increased beyond 100, an error will be printed to stderr."
+        exit
+    fi
     if [ $num <= 100 && $num >= 0 ]; then
-        $(amixer set Master %${num}+)
-        echo "Master volume set to " ${num}
+        $(amixer set Master %${2}+)
+        echo "Master volume set to " ${2}
     else 
         echo "Specified volume invalid. Try again."
     fi
@@ -88,22 +104,40 @@ function ivol(){
 }
 
 function dvol(){
-    if [ $num <= 100 && $num >= 0 ]; then
-        $(amixer set Master %${num}-)
-        echo "Master volume decreased to " ${num}
+    if [ $opt == "help" ]; then 
+        echo "ivol      : decreases the volume gain of master by the given number(parameter 2, in percentages, must be between 0-100)."
+        echo "            if the volume is decreased beyond 0, an error will be printed to stderr."
+        exit
+    fi
+    if [ $num <= 100 && $2 >= 0 ]; then
+        $(amixer set Master %${2}-)
+        echo "Master volume decreased to " ${2}
     else 
         echo "Specified volume invalid. Try again."
     fi
 }
 
 function setalarm(){
+    if [ $opt == "help" ]; then 
+        echo "setalarm  : sets an alarm with the given parameter 2 as time value(see man cronjob), and the parameter 3"
+        echo "as the alarm sound(if not given, default value will be used). Alarm Duration is optional at parameter 4."
+    fi
     $(crontab -l > jobs.txt)
-    echo "${timeval} aplay ${filename} ${duration}" >> "jobs.txt"
+    if [ ${3} != "" && ${4} != "" ]; then
+        echo "${2} aplay ${3} -d ${4}" >> "jobs.txt"
+    elif [ ${3} != "" ]; then
+        echo "${2} aplay ${3}" >> "jobs.txt"
+    else
+        echo "${2} aplay " >> "jobs.txt"
+    fi
     $(cron jobs.txt)
     echo "Alarm Set"
 }
 
 function showalarm(){
+    if [ $opt == "help" ]; then 
+        echo "showalarm : shows all alarms that have been created." && exit
+    fi
     local count=1
     echo "=================================================================="
     echo "All alarm:"
@@ -114,6 +148,9 @@ function showalarm(){
 }
 
 function delalarm(){
+    if [ $opt == "help" ]; then 
+        echo "delalarm  : removes the specified alarm from the system. Does not remove the sound used." && exit
+    fi
     local count=1
     local msg
     echo "=================================================================="
@@ -130,8 +167,7 @@ function delalarm(){
 msg=""
 if [ $# == 0 ]; then
     read -p "Welcome to Broprog Alarmizer. What do you want to do? (type help to print manual): " msg
-    echo $msg
-    #$(conditionals)
+    $msg
 fi
 
 if [ $# == 1 ]; then
@@ -140,20 +176,11 @@ if [ $# == 1 ]; then
     echo "Command not found. Try again."
     exit
 else
-    while getopts "n:d:f:t:w:" flag; do
-        case "${flag}" in
-            n) num=${OPTARG};;
-            d) duration=${OPTARG};;
-            f) filename=${OPTARG};;
-            t) task=${OPTARG};;
-            w) timeval=${OPTARG};;
-        esac
-    done
-    echo "num = ${num}"
-    echo "duration = ${duration}"
-    echo "filename = ${filename}"
-    echo "task = ${task}"
-    echo "timeval = ${timeval}"
+    p1=$1
+    p2=$2
+    p3=$3
+    p4=$4
+    p5=$5
     $1
 fi
 
