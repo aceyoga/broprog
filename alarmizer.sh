@@ -165,7 +165,7 @@ function delalarm(){
 }
 
 function startup(){ # literally mindahin crontab dari default di /lalala/lilili/cron ke /home/user/broprog/jobs.txt
-    crontab -l > /home/user/broprog/jobs.txt there :V 
+    crontab -l > /home/user/broprog/jobs.txt 
 }
 
 msg=""
