@@ -118,12 +118,16 @@ function dvol(){
 
 function setalarm(){
     if [ $opt == "help" ]; then 
-        echo "setalarm  : sets an alarm with the given parameter 2 as time value(see man cronjob), and the parameter 3"
-        echo "as the alarm sound(if not given, default value will be used). Alarm Duration is optional at parameter 4."
+        echo "setalarm  : sets an alarm with the given parameter 1-5 as time value(see man cronjob), and the parameter 6"
+        echo "as the alarm sound(if not given, default value will be used). Parameter 7 is the task to do(optional)."
+        echo "To add a task at the alarm, you must also specify the alarm sound(if you want it default just use default.wav)."
     fi
 
     if [ ${6} != "" ]; then
         echo "$1 $2 $3 $4 $5 aplay $6" >> jobs.txt
+        if [ ${7} != "" ]; then
+            echo "$1 $2 $3 $4 $5 $7 $8 $9 ${10} ${11} ${12}" >> jobs.txt
+        fi
     else
         echo "$1 $2 $3 $4 $5 aplay default.wav" >> jobs.txt
     fi
@@ -164,7 +168,7 @@ if [ $# == 0 ]; then
     clear
     read -p "Welcome to Broprog Alarmizer. What do you want to do? (type broproghelp to print manual): " msg
     order=($msg)
-    ${order[0]} ${order[1]} ${order[2]} ${order[3]} ${order[4]} ${order[5]} ${order[6]} ${order[7]} ${order[8]}
+    ${order[0]} ${order[1]} ${order[2]} ${order[3]} ${order[4]} ${order[5]} ${order[6]} ${order[7]} ${order[8]} ${order[9]} ${order[10]} ${order[11]} ${order[12]}
     echo "See you later :D"
 fi
 
