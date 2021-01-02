@@ -26,9 +26,8 @@
 # -f : the file name/path to file(relative to the program. Can be absolute path).
 # -t : a single-line command encapsulated in "".
 # -w : the time for setalarm. Format: month-week-day
-
 function broproghelp(){
-    echo "================================================================"
+    echo "=================================================================="
     echo "Command list:"
     echo "help      : show command list and how to use."
     echo "devlist   : lists all audio devices(equivalent of aplay -l)."
@@ -80,12 +79,12 @@ function cvol(){
     if [ $opt == "help" ]; then 
         echo "cvol      : changes the volume gain of master to given number(parameter 2, in percentages, must be between 0-100)." && exit
     fi
-    if [ $1 <= 100 && $1 >= 0 ]; then
+    #if [ $1 <= 100 && $1 >= 0 ]; then
         $(amixer set Master ${1}%)
         echo "Master volume set to" $(1)
-    else 
-        echo "Specified volume invalid. Try again."
-    fi
+    #else 
+    #    echo "Specified volume invalid. Try again."
+    #fi
 }
 
 function ivol(){
@@ -94,12 +93,12 @@ function ivol(){
         echo "            if the volume is increased beyond 100, an error will be printed to stderr."
         exit
     fi
-    if [ $1 <= 100 && $1 >= 0 ]; then
+    #if [ $1 <= 100 && $1 >= 0 ]; then
         $(amixer set Master ${1}%+)
         echo "Master volume set to " ${1}
-    else 
+    #else 
         echo "Specified volume invalid. Try again."
-    fi
+    #fi
 
 }
 
@@ -109,12 +108,12 @@ function dvol(){
         echo "            if the volume is decreased beyond 0, an error will be printed to stderr."
         exit
     fi
-    if [ $num <= 100 && $1 >= 0 ]; then
+    #if [ $num <= 100 && $1 >= 0 ]; then
         $(amixer set Master ${1}%-)
         echo "Master volume decreased to " ${1}
-    else 
-        echo "Specified volume invalid. Try again."
-    fi
+    #else 
+    #    echo "Specified volume invalid. Try again."
+    #fi
 }
 
 function setalarm(){
@@ -122,15 +121,12 @@ function setalarm(){
         echo "setalarm  : sets an alarm with the given parameter 2 as time value(see man cronjob), and the parameter 3"
         echo "as the alarm sound(if not given, default value will be used). Alarm Duration is optional at parameter 4."
     fi
-    $(crontab -l > jobs.txt)
-    if [ ${2} != "" && ${3} != "" ]; then
-        echo "${2} aplay ${2} -d ${3}" >> "jobs.txt"
-    elif [ ${3} != "" ]; then
-        echo "${1} aplay ${2}" >> "jobs.txt"
+
+    if [ ${6} != "" ]; then
+        echo "$1 $2 $3 $4 $5 aplay $6" >> jobs.txt
     else
-        echo "${1} aplay " >> "jobs.txt"
+        echo "$1 $2 $3 $4 $5 aplay default.wav" >> jobs.txt
     fi
-    $(cron jobs.txt)
     echo "Alarm Set"
 }
 
@@ -141,9 +137,7 @@ function showalarm(){
     local count=1
     echo "=================================================================="
     echo "All alarm:"
-    for $line in $(cat jobs.txt | grep aplay); do
-        echo $count ". ${line}"
-    done
+    cat jobs.txt | grep aplay
     echo "=================================================================="
 }
 
@@ -151,20 +145,17 @@ function delalarm(){
     if [ $opt == "help" ]; then 
         echo "delalarm  : removes the specified alarm from the system. Does not remove the sound used." && exit
     fi
-    local count=1
     local msg
     echo "=================================================================="
     echo "All alarm:"
-    for $line in $(cat jobs.txt | grep aplay); do
-        echo $count ". ${line}"
-    done
+    cat jobs.txt | grep aplay
     echo "=================================================================="
 
-    read -p "Which alarm you want to delete?" msg
-    [ msg <= count ] && $(cat jobs.txt | grep aplay | sed -i '${msg}d' jobs.txt)
+    read -p "Which alarm you want to delete?(alarm index + 1)" msg
+    cat jobs.txt | grep aplay | sed -i ${msg}d jobs.txt
 }
 
-function startup(){ # literally mindahin crontab dari default di /lalala/lilili/cron ke /home/user/broprog/jobs.txt
+function startup(){
     crontab -l > /home/user/broprog/jobs.txt 
 }
 
@@ -173,17 +164,19 @@ if [ $# == 0 ]; then
     clear
     read -p "Welcome to Broprog Alarmizer. What do you want to do? (type broproghelp to print manual): " msg
     order=($msg)
-    ${order[0]} ${order[1]} ${order[2]} ${order[3]} ${order[4]} ${order[5]}
+    ${order[0]} ${order[1]} ${order[2]} ${order[3]} ${order[4]} ${order[5]} ${order[6]} ${order[7]} ${order[8]}
     echo "See you later :D"
 fi
 
 if [ $# == 1 ]; then
     [ "$1" == "help" ] && broproghelp && exit
     [ "$1" == "devlist" ] && $(aplay -l) && exit
+    [ "$1" == "setalarm" ] && setalarm && exit
+    [ "$1" == "showalarm" ] && showalarm && exit
+    [ "$1" == "delalarm" ] && delalarm && exit
     echo "Command not found. Try again."
     exit
 else
     opt=$2
     $1 $2 $3 $4 $5
 fi
-
