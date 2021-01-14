@@ -132,6 +132,7 @@ function setalarm(){
         echo "$1 $2 $3 $4 $5 aplay default.wav" >> jobs.txt # setalarm 0 5 1 1 1
     fi
     echo "Alarm Set"
+    crontab jobs.txt
 }
 
 function showalarm(){
@@ -159,10 +160,12 @@ function delalarm(){
     sed -n ${msg}p < jobs.txt
     echo "The above alarm is deleted."
     sed -i ${msg}d jobs.txt
+    crontab jobs.txt
 }
 
 function startup(){
     crontab -l > /home/user/broprog/jobs.txt 
+    crontab jobs.txt
 }
 
 msg=""
