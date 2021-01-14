@@ -121,18 +121,19 @@ function setalarm(){
         echo "as the alarm sound(if not given, default value will be used). Parameter 7 is the task to do(optional)."
         echo "To add a task at the alarm, you must also specify the alarm sound(if you want it default just use default.wav)."
     fi
-    # bash alarmize.sh setalarm 0 0 1 1 1 echo "Selamat Tahun Baru dan UAS!"
+    # Testing CRON: setalarm 0 0 1 1 1 echo "Selamat Tahun Baru dan UAS!" > /home/user/broprog/test.txt
     if [[ ${6} != "" ]]; then
         if [[ ${7} != "" ]]; then
-            echo "$1 $2 $3 $4 $5 $6 $7 $8 $9 ${10} ${11} ${12}" >> jobs.txt # setalarm 0 5 1 1 1 aplay radio.wav 5
+            echo "$1 $2 $3 $4 $5 $6 $7 $8 $9 ${10} ${11} ${12}" >> jobs.txt # setalarm 0 5 1 1 1 aplay /home/user/broprog/default.wav 5
         else
-            echo "$1 $2 $3 $4 $5 aplay $6" >> jobs.txt  # setalarm 0 5 1 1 1 aplay radio.wav
+            echo "$1 $2 $3 $4 $5 aplay $6" >> jobs.txt  # setalarm 0 5 1 1 1 aplay /home/user/broprog/default.wav
         fi
     else
-        echo "$1 $2 $3 $4 $5 aplay default.wav" >> jobs.txt # setalarm 0 5 1 1 1
+        echo "$1 $2 $3 $4 $5 aplay /home/user/broprog/default.wav" >> jobs.txt # setalarm 0 5 1 1 1
     fi
     echo "Alarm Set"
     crontab jobs.txt
+    cat jobs.txt | crontab -
 }
 
 function showalarm(){
@@ -144,6 +145,8 @@ function showalarm(){
     echo "All alarm and task:"
     cat jobs.txt
     echo "=================================================================="
+    crontab jobs.txt
+    cat jobs.txt | crontab -
 }
 
 function delalarm(){
@@ -161,11 +164,13 @@ function delalarm(){
     echo "The above alarm is deleted."
     sed -i ${msg}d jobs.txt
     crontab jobs.txt
+    cat jobs.txt | crontab -
 }
 
 function startup(){
     crontab -l > /home/user/broprog/jobs.txt 
     crontab jobs.txt
+    cat jobs.txt | crontab -
 }
 
 msg=""
