@@ -1,3 +1,10 @@
-
-0 15 2 1 6 aplay default.wav
-0 15 2 1 6 echo "Alarm hidup"   
+0 15 2 1 6 echo "Alarm 1"
+0 15 2 1 6 echo "Alarm 2"
+0 15 2 1 6 echo "Alarm 3"
+0 15 2 1 6 echo "Alarm 4"
+0 15 2 1 6 echo "Alarm 7"
+0 15 2 1 6 echo "Alarm 6"
+0 15 2 1 6 echo "Alarm 8"
+0 15 2 1 6 echo "Alarm 9"
+0 15 2 1 6 echo "Alarm 10"
+0 0 1 1 1 echo "Selamat Tahun Baru dan UAS!"
